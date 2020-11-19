@@ -60,6 +60,16 @@ instantiate the UpdDiscoveryClient class.
       T0:22 /0 B:11/0
       ok
 
+- LED_ON = M146 r255 g255 b255 F0
+
+      CMD M146 Received.
+      ok
+
+- LED_OFF = M146 r0 g0 b0 F0
+
+      CMD M146 Received.
+      ok
+
 - PRINT_STATUS = M27
 
       CMD M27 Received.
@@ -89,7 +99,17 @@ instantiate the UpdDiscoveryClient class.
       .
       .
 
-- PRINT = M23 filename
+- PRINT_START = M23 filename
+  
+      CMD M23 Received.
+      File opened: 20mm_Box.gx Size: 154674
+      File selected
+      ok
+
+- PRINT_STOP = M26
+
+      CMD M26 Received.
+      ok
 
 
 
@@ -109,7 +129,8 @@ B[SAVE_FILE] --> C[PRINT]
 
 ## Transfer data packet header
 
-For transfering data to the printer you have to splitt the packets in 4096 byte pices and build the CRC32 checksum from it. You also have to count the real length of the packet because of the last packet need to know its size, a packetcounter is also needed.
+For transferring data to the printer you have to split the packets in 4096 byte pieces and build the CRC32 checksum from it. 
+You also have to count the real length of the packet because of the last packet need to know its size, a packet counter is also needed.
 
 
 #### Header:
@@ -121,6 +142,11 @@ For transfering data to the printer you have to splitt the packets in 4096 byte 
 
 
 
+## FAQ
+
+- There is currently only logging to sysout implemented, but it's easy to replace because 
+  there are only System.out.println() calls for info logging and in Exceptions e.printStackTrace() calls 
+  for error logging.
 
 Working in progress...
 
