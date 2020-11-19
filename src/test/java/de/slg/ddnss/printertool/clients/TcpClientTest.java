@@ -35,11 +35,6 @@ class TcpClientTest {
 		}
 	}
 
-	@AfterAll
-	static void shutdown() throws IOException {
-		client.close();
-	}
-
 	@Test
 	void m601test() {
 		String sendOk = client.sendCommand(CMD_HELLO);
@@ -96,6 +91,20 @@ class TcpClientTest {
 	}
 	
 	@Test
+	void ledTest() {
+		String sendOk;
+		sendOk = client.sendCommand(CMD_LED_OFF);
+		System.out.println(sendOk);
+		assertTrue(sendOk.contains("Received"));
+		assertTrue(sendOk.contains("ok"));
+		
+		sendOk = client.sendCommand(CMD_LED_ON);
+		System.out.println(sendOk);
+		assertTrue(sendOk.contains("Received"));
+		assertTrue(sendOk.contains("ok"));
+	}
+	
+	@Test
 	void printTest() {
 		try {
 			Path fileToPrint = Paths.get("20mm_Box.gx");
@@ -109,7 +118,9 @@ class TcpClientTest {
 				List<byte[]> gcode = Util.prepareRawData(readAllLines);
 				System.out.println(client.sendRawData(gcode));		
 				System.out.println(client.sendCommand(CMD_SAVE_FILE));
-//				System.out.println(client.sendCommand(CMD_PRINT.replaceAll("%%filename%%", filename)));
+				System.out.println(client.sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
+				
+				System.out.println(client.sendCommand(CMD_PRINT_STATUS));
 			} catch (FlashForgePrinterTransferException e) {
 				e.printStackTrace();
 			}
@@ -117,6 +128,20 @@ class TcpClientTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	@AfterAll
+	static void printStopTest() throws IOException {
+		String sendOk = client.sendCommand(CMD_PRINT_STOP);
+		System.out.println(sendOk);
+		assertTrue(sendOk.contains("Received"));
+		assertTrue(sendOk.contains("ok"));
+		
+		sendOk = client.sendCommand(CMD_BYE);
+		System.out.println(sendOk);
+		assertTrue(sendOk.equals("CMD M602 Received.\nControl Release.\nok"));
+		
+		client.close();
 	}
 
 }
