@@ -35,7 +35,7 @@ class AdventurerClientTest {
 	@Test
 	void commandTest() throws UnknownHostException, IOException {
 		AdventurerClient client = new AdventurerClient(printerAddress);
-		String replay = client.sendCommand(AdventurerCommands.CMD_INFO_FW);
+		String replay = client.sendCommand(AdventurerCommands.CMD_INFO_STATUS);
 		System.out.println(replay);
 		client.close();
 		assertNotNull(replay);

@@ -44,7 +44,7 @@ class TcpClientTest {
 
 	@Test
 	void m115test() {
-		String sendOk = client.sendCommand(CMD_INFO_FW);
+		String sendOk = client.sendCommand(CMD_INFO_STATUS);
 		System.out.println(sendOk);
 		assertEquals("CMD M115 Received.\nMachine Type: FlashForge Adventurer III\n" + "Machine Name: My 3D Printer\n"
 				+ "Firmware: v1.1.7\n" + "SN: SNFFAD229083\n" + "X: 150 Y: 150 Z: 150\n" + "Tool Count: 1\n"

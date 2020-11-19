@@ -40,7 +40,7 @@ instantiate the UpdDiscoveryClient class.
       Mac Address: 88:A9:A7:XX:XX:XX
       ok
 
-- INFO_FW = M119
+- INFO_STATUS = M119
 
       CMD M119 Received.
       Endstop: X-max:1 Y-max:0 Z-max:0

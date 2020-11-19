@@ -13,7 +13,7 @@ public class AdventurerCommands {
 	public static final String CMD_HELLO = "~M601 S1";
 	public static final String CMD_BYE = "~M602";
 	public static final String CMD_INFO = "~M119";
-	public static final String CMD_INFO_FW = "~M115";
+	public static final String CMD_INFO_STATUS = "~M115";
 	public static final String CMD_INFO_XYZAB = "~M114";
 	public static final String CMD_INFO_CAL = "~M650";
 	public static final String CMD_TEMP = "~M105";
