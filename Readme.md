@@ -1,8 +1,9 @@
 
 # FlashForge Adventurer 3 Printer API 
 This library enables you to communicate with your FlashForge Adventurer 3 printer and maybe other 
-printers from FlashForge. It is completely written in Java and communicates via TCP with the printer. 
-You can use this library to build you own monitoring or printing tools.
+models from FlashForge. It is completely written in Java and communicates with the printer 
+via raw TCP. 
+You can use this library to build your own monitoring or printing tools.
 
 The library find's your printer in the network with a UDP broadcast message which is send when you 
 instantiate the UpdDiscoveryClient class.
