@@ -21,6 +21,12 @@ instantiate the UpdDiscoveryClient class.
       Control Success.
       ok
 
+- BYE = M602
+
+      CMD M602 Received.
+      Control Release.
+      ok
+
 - INFO = 115
   
       CMD M115 Received.
