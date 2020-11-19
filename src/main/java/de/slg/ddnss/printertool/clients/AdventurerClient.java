@@ -1,8 +1,6 @@
 package de.slg.ddnss.printertool.clients;
 
-import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PREPARE_PRINT;
-import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT;
-import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_SAVE_FILE;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -32,7 +30,7 @@ public class AdventurerClient extends TcpPrinterClient {
 				List<byte[]> gcode = Util.prepareRawData(readAllLines);
 				System.out.println(sendRawData(gcode));
 				System.out.println(sendCommand(CMD_SAVE_FILE));
-				System.out.println(sendCommand(CMD_PRINT.replaceAll("%%filename%%", filename)));
+				System.out.println(sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
 				return true;
 			} catch (FlashForgePrinterTransferException e) {
 				e.printStackTrace();
@@ -43,6 +41,10 @@ public class AdventurerClient extends TcpPrinterClient {
 		}
 
 		return false;
+	}
+	
+	public void setFan(boolean on) {
+		sendCommand(on ? CMD_CHASSIS_FAN_ON : CMD_CHASSIS_FAN_OFF);
 	}
 
 }
