@@ -1,0 +1,51 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Eclipse
+.project
+.classpath
+.settings
+
+# Idea
+.idea
+*.iml
+*.iws
+*.ipr
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Gradle
+.gradle
+!gradle-wrapper.jar
+
+# Maven
+/target**
+
+# Build
+out
+build
+bin
+
+# Other
+*.log
+*.swp
+*.bak
+
+# dBeaver
+credentials-config.json
+data-sources.json
+project-metadata.json
+
+# Node/npm
+node
+node_modules
+
+package-lock.json
+package.json
+/webpack.config.js
+/webpack.generated.js
