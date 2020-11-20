@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
 import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
 import de.slg.ddnss.printertool.util.Util;
 
@@ -30,20 +31,20 @@ class TcpClientTest {
 			assertNotNull(printerAddress);
 			client = new TcpPrinterClient(printerAddress);
 			assertNotNull(client);
-		} catch (IOException e) {
+		} catch (FlashForgePrinterException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Test
-	void m601test() {
+	void m601test() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_HELLO);
 		System.out.println(sendOk);
 		assertEquals("CMD M601 Received.\nControl Success.\nok", sendOk);
 	}
 
 	@Test
-	void m115test() {
+	void m115test() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_INFO_STATUS);
 		System.out.println(sendOk);
 		assertEquals("CMD M115 Received.\nMachine Type: FlashForge Adventurer III\n" + "Machine Name: My 3D Printer\n"
@@ -52,20 +53,20 @@ class TcpClientTest {
 	}
 
 	@Test
-	void m650test() {
+	void m650test() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_INFO_CAL);
 		System.out.println(sendOk);
 		assertEquals("CMD M650 Received.\nX: 1.0 Y: 0.5\nok", sendOk);
 	}
 
 	@Test
-	void m114test() {
+	void m114test() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_INFO_XYZAB);
 		System.out.println(sendOk);
 	}
 
 	@Test
-	void m119test() {
+	void m119test() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_INFO);
 		System.out.println(sendOk);
 		assertTrue(sendOk.contains("Received"));
@@ -73,7 +74,7 @@ class TcpClientTest {
 	}
 
 	@Test
-	void m27test() {
+	void m27test() throws FlashForgePrinterException {
 		String sendOk;
 		sendOk = client.sendCommand(CMD_PRINT_STATUS);
 		System.out.println(sendOk);
@@ -82,7 +83,7 @@ class TcpClientTest {
 	}
 
 	@Test
-	void m105test() {
+	void m105test() throws FlashForgePrinterException {
 		String sendOk;
 		sendOk = client.sendCommand(CMD_TEMP);
 		System.out.println(sendOk);
@@ -91,7 +92,7 @@ class TcpClientTest {
 	}
 	
 	@Test
-	void ledTest() {
+	void ledTest() throws FlashForgePrinterException {
 		String sendOk;
 		sendOk = client.sendCommand(CMD_LED_OFF);
 		System.out.println(sendOk);
@@ -105,7 +106,7 @@ class TcpClientTest {
 	}
 	
 	@Test
-	void printTest() {
+	void printTest() throws FlashForgePrinterException {
 		try {
 			Path fileToPrint = Paths.get("20mm_Box.gx");
 			byte[] readAllLines = Files.readAllBytes(fileToPrint);
@@ -116,7 +117,7 @@ class TcpClientTest {
 
 			try {
 				List<byte[]> gcode = Util.prepareRawData(readAllLines);
-				System.out.println(client.sendRawData(gcode));		
+				client.sendRawData(gcode);		
 				System.out.println(client.sendCommand(CMD_SAVE_FILE));
 				System.out.println(client.sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
 				
@@ -131,7 +132,7 @@ class TcpClientTest {
 	}
 	
 	@AfterAll
-	static void printStopTest() throws IOException {
+	static void printStopTest() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_PRINT_STOP);
 		System.out.println(sendOk);
 		assertTrue(sendOk.contains("Received"));

@@ -1,34 +1,39 @@
 package de.slg.ddnss.printertool.clients;
 
-import static de.slg.ddnss.printertool.clients.AdventurerCommands.*;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_OFF;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_ON;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PREPARE_PRINT;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT_START;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT_STOP;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_SAVE_FILE;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
 import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
 import de.slg.ddnss.printertool.util.Util;
 
 public class AdventurerClient extends TcpPrinterClient {
 
-	public AdventurerClient(String hostname) throws UnknownHostException, IOException {
+	public AdventurerClient(String hostname) throws FlashForgePrinterException {
 		super(hostname);
 	}
 
-	public boolean print(Path file) {
+	public boolean print(Path file) throws FlashForgePrinterException {
 		try {
 			byte[] readAllLines = Files.readAllBytes(file);
 			String filename = file.getFileName().toString();
 			System.out.println("File: " + filename + "/" + readAllLines.length + "byte");
 
 			System.out.println(sendCommand(CMD_PREPARE_PRINT.replaceAll("%%size%%", "" + readAllLines.length)
-															.replaceAll("%%filename%%", filename)));
+					.replaceAll("%%filename%%", filename)));
 
 			try {
 				List<byte[]> gcode = Util.prepareRawData(readAllLines);
-				System.out.println(sendRawData(gcode));
+				sendRawData(gcode);
 				System.out.println(sendCommand(CMD_SAVE_FILE));
 				System.out.println(sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
 				return true;
@@ -42,9 +47,17 @@ public class AdventurerClient extends TcpPrinterClient {
 
 		return false;
 	}
-	
-	public void setFan(boolean on) {
-		sendCommand(on ? CMD_CHASSIS_FAN_ON : CMD_CHASSIS_FAN_OFF);
+
+	public boolean setLed(boolean on) throws FlashForgePrinterException {
+		String replay = sendCommand(on ? CMD_LED_ON : CMD_LED_OFF);
+		System.out.println(replay);
+		return replay.contentEquals("CMD M146 Received.\nok");
+	}
+
+	public boolean stopPrinting() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_PRINT_STOP);
+		System.out.println(replay);
+		return replay.trim().contentEquals("CMD M26 Received.\nok");
 	}
 
 }

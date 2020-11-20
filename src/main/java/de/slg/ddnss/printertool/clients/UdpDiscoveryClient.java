@@ -12,24 +12,27 @@ public class UdpDiscoveryClient {
 	private InetAddress address;
 
 	private byte[] buf;
+	
+	private static final String HOSTNAME = "225.0.0.9";
+	private static final int PORT = 19000;
 
 	public UdpDiscoveryClient() {
 		try {
 			socket = new DatagramSocket();
-			address = InetAddress.getByName("225.0.0.9");
+			address = InetAddress.getByName(HOSTNAME);
+			socket.setSoTimeout(5000);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public boolean sendMessage(String msg) {
 		buf = msg.getBytes();
-		DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 19000);
+		DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
 		try {
-			System.out.println("Broadcast: " + msg + " => " + buf.length + "Bytes to " + address.getHostAddress() + ":19000");
+			System.out.println("Broadcast: " + msg + " => " + buf.length + "Bytes to " + address.getHostAddress() + ":" + PORT);
 			socket.send(packet);
 			return true;
 		} catch (IOException e) {

@@ -1,6 +1,6 @@
 package de.slg.ddnss.printertool.exceptions;
 
-public class FlashForgePrinterTransferException extends Exception {
+public class FlashForgePrinterTransferException extends FlashForgePrinterException {
 
 	/**
 	 * 
@@ -10,5 +10,5 @@ public class FlashForgePrinterTransferException extends Exception {
 	public FlashForgePrinterTransferException(String message) {
 		super(message);
 	}
-
+	
 }

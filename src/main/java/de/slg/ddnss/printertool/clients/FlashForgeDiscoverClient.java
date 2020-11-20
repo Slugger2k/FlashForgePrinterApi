@@ -9,16 +9,9 @@ public class FlashForgeDiscoverClient extends UdpDiscoveryClient {
 	
 	public FlashForgeDiscoverClient() {
 		super();
-		sendMessage(discoveryPayload);
+		System.out.println("Send broadcast msg: " + sendMessage(discoveryPayload));
 		receiveMessage = receiveMessage();
 		close();
-	}
-	
-	public FlashForgeDiscoverClient discoverPrinter() {
-		sendMessage(discoveryPayload);
-		receiveMessage = receiveMessage();
-		close();
-		return this;
 	}
 	
 	public String getPrinterAddress() {

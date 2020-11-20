@@ -9,7 +9,6 @@ public class AdventurerCommands {
 	 * IDLE-SEQUENZ: M601 S1, M115, M650, M115, M114, M27, M119, M105
 	 * PRINT-SEQUNEZ: M28 size filename, Send Data with header, M29, M23 filename
 	 */
-
 	public static final String CMD_HELLO = "~M601 S1";
 	public static final String CMD_BYE = "~M602";
 	public static final String CMD_INFO = "~M119";
@@ -24,10 +23,5 @@ public class AdventurerCommands {
 	public static final String CMD_PREPARE_PRINT = "~M28 %%size%% 0:/user/%%filename%%\r";
 	public static final String CMD_PRINT_START = "~M23 0:/user/%%filename%%\r";
 	public static final String CMD_PRINT_STOP = "~M26\r";
-	
-	//Not working yet
-	public static final String CMD_CHASSIS_FAN_ON = "~M651\r";
-	public static final String CMD_CHASSIS_FAN_OFF = "~M652\r";
-	
 
 }

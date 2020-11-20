@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
 import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
 
 public class TcpPrinterClient implements Closeable {
@@ -21,12 +22,18 @@ public class TcpPrinterClient implements Closeable {
 	private final int port = 8899;
 	private final int timeout = 25000;
 
-	public TcpPrinterClient(String hostname) throws UnknownHostException, IOException {
-		socket = new Socket(hostname, port);
-		socket.setSoTimeout(timeout);
+	public TcpPrinterClient(String hostname) throws FlashForgePrinterException {
+		try {
+			socket = new Socket(hostname, port);
+			socket.setSoTimeout(timeout);			
+		} catch (UnknownHostException e) {
+			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host.");
+		} catch (IOException e) {
+			throw new FlashForgePrinterException("Error while creating socket.", e);
+		}
 	}
 
-	public String sendCommand(String cmd) {
+	public String sendCommand(String cmd) throws FlashForgePrinterException {
 		System.out.println("Send Command: " + cmd);
 		try {
 			OutputStream output = socket.getOutputStream();
@@ -34,39 +41,36 @@ public class TcpPrinterClient implements Closeable {
 			writer.println(cmd);
 			return receiveMultiLineReplay(socket);
 		} catch (NoRouteToHostException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterTransferException("Error while connecting.  No route to host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterException("Error while building or writing outputstream.", e);
 		}
-		return "Error";
 	}
 
-	public String sendRawData(List<byte[]> rawData) throws FlashForgePrinterTransferException {
+	public void sendRawData(List<byte[]> rawData) throws FlashForgePrinterException {
 		try {
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 			for (byte[] bs : rawData) {
 				System.out.println("Send data: " + bs.length + " bytes");
 				dos.write(bs);
-				String receiveAnswer = receiveSingleLineReplay(socket);
-				System.out.println(receiveAnswer);
-				if (receiveAnswer.matches("N\\d{4,}\serror.")) {
-					throw new FlashForgePrinterTransferException("Error while transfering the file to the printer.");
+				String replay = receiveSingleLineReplay(socket);
+				System.out.println(replay);
+				if (replay.matches("N\\d{4,}\serror.")) {
+					throw new FlashForgePrinterTransferException("Error while transfering data.");
 				}
 			}
-			return "";
 		} catch (NoRouteToHostException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterTransferException("Error while connecting. No route to host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		return "Error";
+			throw new FlashForgePrinterException("Error while building or writing outputstream.", e);
+		}
 	}
 
-	public String receiveMultiLineReplay(Socket socket) {
+	public String receiveMultiLineReplay(Socket socket) throws FlashForgePrinterException {
 		StringBuffer answer = new StringBuffer();
 		BufferedReader reader = null;
 		try {
@@ -81,28 +85,31 @@ public class TcpPrinterClient implements Closeable {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterException("Error while building or reading inputstream.", e);
 		}
 
 		return answer.toString().trim();
 	}
 
-	public String receiveSingleLineReplay(Socket socket) {
+	public String receiveSingleLineReplay(Socket socket) throws FlashForgePrinterException {
 		BufferedReader reader = null;
 		try {
 			InputStream input = socket.getInputStream();
 			reader = new BufferedReader(new InputStreamReader(input));
-			
+
 			String line = reader.readLine();
 			return line.trim();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterException("Error while building or reading inputstream.", e);
 		}
-		return "Error";
 	}
 
 	@Override
-	public void close() throws IOException {
-		socket.close();
+	public void close() {
+		try {
+			socket.close();			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

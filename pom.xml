@@ -20,6 +20,16 @@
 			<version>5.5.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>1.5.2</version>
+		</dependency>
 	</dependencies>
 	<name>FlashForgePrinterApi</name>
 	<description>This library enables you to communicate with your FlashForge Adventurer 3 printer and maybe other 
