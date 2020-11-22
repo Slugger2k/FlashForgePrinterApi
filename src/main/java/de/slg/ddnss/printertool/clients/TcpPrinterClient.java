@@ -57,7 +57,7 @@ public class TcpPrinterClient implements Closeable {
 				dos.write(bs);
 				String replay = receiveSingleLineReplay(socket);
 				System.out.println(replay);
-				if (replay.matches("N\\d{4,}\serror.")) {
+				if (replay.matches("N\\d{4,}\\serror.")) {
 					throw new FlashForgePrinterTransferException("Error while transfering data.");
 				}
 			}
