@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -21,27 +22,22 @@ public class TcpPrinterClient implements Closeable {
 	private Socket socket;
 	private final int port = 8899;
 	private final int timeout = 25000;
+	private String hostname;
 
-	public TcpPrinterClient(String hostname) throws FlashForgePrinterException {
-		try {
-			socket = new Socket(hostname, port);
-			socket.setSoTimeout(timeout);			
-		} catch (UnknownHostException e) {
-			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host.");
-		} catch (IOException e) {
-			throw new FlashForgePrinterException("Error while creating socket.", e);
-		}
+	public TcpPrinterClient(String hostname) {
+		this.hostname = hostname;
 	}
 
 	public String sendCommand(String cmd) throws FlashForgePrinterException {
 		System.out.println("Send Command: " + cmd);
 		try {
+			checkSocket();
 			OutputStream output = socket.getOutputStream();
 			PrintWriter writer = new PrintWriter(output, true);
 			writer.println(cmd);
 			return receiveMultiLineReplay(socket);
 		} catch (NoRouteToHostException e) {
-			throw new FlashForgePrinterTransferException("Error while connecting.  No route to host ["  + socket.getInetAddress().getHostAddress() + "].");
+			throw new FlashForgePrinterTransferException("Error while connecting. No route to host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (UnknownHostException e) {
 			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (IOException e) {
@@ -51,6 +47,7 @@ public class TcpPrinterClient implements Closeable {
 
 	public void sendRawData(List<byte[]> rawData) throws FlashForgePrinterException {
 		try {
+			checkSocket();
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 			for (byte[] bs : rawData) {
 				System.out.println("Send data: " + bs.length + " bytes");
@@ -67,6 +64,17 @@ public class TcpPrinterClient implements Closeable {
 			throw new FlashForgePrinterTransferException("Error while connecting. Unknown host ["  + socket.getInetAddress().getHostAddress() + "].");
 		} catch (IOException e) {
 			throw new FlashForgePrinterException("Error while building or writing outputstream.", e);
+		}
+	}
+
+	private void checkSocket() throws UnknownHostException, IOException, SocketException {
+		if (socket == null || socket.isClosed()) {
+			socket = new Socket(hostname, port);
+			socket.setSoTimeout(timeout);	
+		} else if (socket.isConnected()) {
+			socket.close();
+			socket = new Socket(hostname, port);
+			socket.setSoTimeout(timeout);
 		}
 	}
 

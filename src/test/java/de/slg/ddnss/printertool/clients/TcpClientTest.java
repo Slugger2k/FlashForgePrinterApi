@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,9 @@ class TcpClientTest {
 	@BeforeAll
 	static void init() {
 		try {
-			printerAddress = new FlashForgeDiscoverClient().getPrinterAddress();
+			FlashForgeDiscoverClient flashForgeDiscoverClient = new FlashForgeDiscoverClient();
+			flashForgeDiscoverClient.discoverPrinter();
+			printerAddress = flashForgeDiscoverClient.getPrinterAddress();
 			assertNotNull(printerAddress);
 			client = new TcpPrinterClient(printerAddress);
 			assertNotNull(client);
@@ -90,7 +93,7 @@ class TcpClientTest {
 		assertTrue(sendOk.contains("Received"));
 		assertTrue(sendOk.contains("ok"));
 	}
-	
+
 	@Test
 	void ledTest() throws FlashForgePrinterException {
 		String sendOk;
@@ -98,13 +101,13 @@ class TcpClientTest {
 		System.out.println(sendOk);
 		assertTrue(sendOk.contains("Received"));
 		assertTrue(sendOk.contains("ok"));
-		
+
 		sendOk = client.sendCommand(CMD_LED_ON);
 		System.out.println(sendOk);
 		assertTrue(sendOk.contains("Received"));
 		assertTrue(sendOk.contains("ok"));
 	}
-	
+
 	@Test
 	void printTest() throws FlashForgePrinterException {
 		try {
@@ -112,15 +115,16 @@ class TcpClientTest {
 			byte[] readAllLines = Files.readAllBytes(fileToPrint);
 			String filename = fileToPrint.getFileName().toString();
 			System.out.println("File: " + filename + "/" + readAllLines.length + "byte");
-			
-			System.out.println(client.sendCommand(CMD_PREPARE_PRINT.replaceAll("%%size%%", "" + readAllLines.length).replaceAll("%%filename%%", filename)));
+
+			System.out.println(client.sendCommand(CMD_PREPARE_PRINT.replaceAll("%%size%%", "" + readAllLines.length)
+					.replaceAll("%%filename%%", filename)));
 
 			try {
 				List<byte[]> gcode = Util.prepareRawData(readAllLines);
-				client.sendRawData(gcode);		
+				client.sendRawData(gcode);
 				System.out.println(client.sendCommand(CMD_SAVE_FILE));
 				System.out.println(client.sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
-				
+
 				System.out.println(client.sendCommand(CMD_PRINT_STATUS));
 			} catch (FlashForgePrinterTransferException e) {
 				e.printStackTrace();
@@ -130,18 +134,24 @@ class TcpClientTest {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Test
+	void unknownHostExceptionTest() {
+		Assertions.assertThrows(FlashForgePrinterTransferException.class, () -> {
+			new TcpPrinterClient("0.0.0.a");
+		});
+	}
+
 	@AfterAll
 	static void printStopTest() throws FlashForgePrinterException {
 		String sendOk = client.sendCommand(CMD_PRINT_STOP);
 		System.out.println(sendOk);
 		assertTrue(sendOk.contains("Received"));
 		assertTrue(sendOk.contains("ok"));
-		
+
 		sendOk = client.sendCommand(CMD_BYE);
 		System.out.println(sendOk);
 		assertTrue(sendOk.equals("CMD M602 Received.\nControl Release.\nok"));
-		
 		client.close();
 	}
 

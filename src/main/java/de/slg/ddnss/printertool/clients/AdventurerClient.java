@@ -1,5 +1,6 @@
 package de.slg.ddnss.printertool.clients;
 
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_INFO_STATUS;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_OFF;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_ON;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PREPARE_PRINT;
@@ -16,9 +17,10 @@ import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
 import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
 import de.slg.ddnss.printertool.util.Util;
 
-public class AdventurerClient extends TcpPrinterClient {
 
-	public AdventurerClient(String hostname) throws FlashForgePrinterException {
+public class AdventurerClient extends TcpPrinterClient {
+	
+	public AdventurerClient(String hostname) {
 		super(hostname);
 	}
 
@@ -58,6 +60,12 @@ public class AdventurerClient extends TcpPrinterClient {
 		String replay = sendCommand(CMD_PRINT_STOP);
 		System.out.println(replay);
 		return replay.trim().contentEquals("CMD M26 Received.\nok");
+	}
+
+	public PrinterInfo getPrinterInfo() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_INFO_STATUS).trim();
+		PrinterInfo info = new PrinterInfo(replay);
+		return info;		
 	}
 
 }

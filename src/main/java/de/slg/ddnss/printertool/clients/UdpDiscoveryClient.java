@@ -4,57 +4,47 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class UdpDiscoveryClient {
-	private DatagramSocket socket;
-	private InetAddress address;
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
 
-	private byte[] buf;
+public class UdpDiscoveryClient {
 	
 	private static final String HOSTNAME = "225.0.0.9";
+	private InetAddress address;
 	private static final int PORT = 19000;
+	private static final int TIMEOUT = 1000;
+	private DatagramSocket socket;
+	private byte[] buf;
 
-	public UdpDiscoveryClient() {
+	public UdpDiscoveryClient() throws FlashForgePrinterException {
 		try {
-			socket = new DatagramSocket();
 			address = InetAddress.getByName(HOSTNAME);
-			socket.setSoTimeout(5000);
-		} catch (SocketException e) {
-			e.printStackTrace();
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			throw new FlashForgePrinterException("UnknownHostException for host: " + HOSTNAME, e);
 		}
 	}
 
-	public boolean sendMessage(String msg) {
-		buf = msg.getBytes();
-		DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
+	public DatagramPacket sendMessage(String msg) throws FlashForgePrinterException {
 		try {
+			buf = msg.getBytes();
+			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
+			socket = new DatagramSocket();
+			socket.setSoTimeout(TIMEOUT);
 			System.out.println("Broadcast: " + msg + " => " + buf.length + "Bytes to " + address.getHostAddress() + ":" + PORT);
 			socket.send(packet);
-			return true;
+			return receiveMessage();
 		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			throw new FlashForgePrinterException("Error while send or receive broadcast.", e);
 		}
 	}
 	
-	
-	public DatagramPacket receiveMessage() {
+	private DatagramPacket receiveMessage() throws IOException {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
-		try {
-			socket.receive(packet);
-			System.out.println("Replay from " + packet.getAddress().getHostAddress() + ": " + new String(packet.getData()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		socket.receive(packet);
+		System.out.println("Replay from " + packet.getAddress().getHostAddress() + ": " + new String(packet.getData()));
+		socket.close();
 		return packet;
 	}
 
-	public void close() {
-		socket.close();
-	}
 }
