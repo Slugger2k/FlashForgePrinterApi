@@ -69,10 +69,7 @@ public class TcpPrinterClient implements Closeable {
 
 	private void checkSocket() throws UnknownHostException, IOException, SocketException {
 		if (socket == null || socket.isClosed()) {
-			socket = new Socket(hostname, port);
-			socket.setSoTimeout(timeout);	
-		} else if (socket.isConnected()) {
-			socket.close();
+			System.out.println("Socket null or closed");
 			socket = new Socket(hostname, port);
 			socket.setSoTimeout(timeout);
 		}

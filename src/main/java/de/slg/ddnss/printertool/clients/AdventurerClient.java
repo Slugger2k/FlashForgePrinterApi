@@ -8,9 +8,6 @@ import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT_STAR
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT_STOP;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_SAVE_FILE;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
@@ -24,26 +21,19 @@ public class AdventurerClient extends TcpPrinterClient {
 		super(hostname);
 	}
 
-	public boolean print(Path file) throws FlashForgePrinterException {
+	public boolean print(String filename, byte[] readAllLines) throws FlashForgePrinterException {
+		System.out.println("File: " + filename + "/" + readAllLines.length + "byte");
+		
+		System.out.println(sendCommand(CMD_PREPARE_PRINT.replaceAll("%%size%%", "" + readAllLines.length)
+				.replaceAll("%%filename%%", filename)));
+		
 		try {
-			byte[] readAllLines = Files.readAllBytes(file);
-			String filename = file.getFileName().toString();
-			System.out.println("File: " + filename + "/" + readAllLines.length + "byte");
-
-			System.out.println(sendCommand(CMD_PREPARE_PRINT.replaceAll("%%size%%", "" + readAllLines.length)
-					.replaceAll("%%filename%%", filename)));
-
-			try {
-				List<byte[]> gcode = Util.prepareRawData(readAllLines);
-				sendRawData(gcode);
-				System.out.println(sendCommand(CMD_SAVE_FILE));
-				System.out.println(sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
-				return true;
-			} catch (FlashForgePrinterTransferException e) {
-				e.printStackTrace();
-			}
-
-		} catch (IOException e) {
+			List<byte[]> gcode = Util.prepareRawData(readAllLines);
+			sendRawData(gcode);
+			System.out.println(sendCommand(CMD_SAVE_FILE));
+			System.out.println(sendCommand(CMD_PRINT_START.replaceAll("%%filename%%", filename)));
+			return true;
+		} catch (FlashForgePrinterTransferException e) {
 			e.printStackTrace();
 		}
 

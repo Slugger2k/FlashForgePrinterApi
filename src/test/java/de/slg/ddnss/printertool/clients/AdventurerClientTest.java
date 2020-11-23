@@ -4,6 +4,8 @@ import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_BYE;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PRINT_STOP;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.AfterAll;
@@ -26,9 +28,9 @@ class AdventurerClientTest {
 	}
 
 	@Test
-	void printTest() throws FlashForgePrinterException {
+	void printTest() throws FlashForgePrinterException, IOException {
 		AdventurerClient client = new AdventurerClient(printerAddress);
-		boolean print = client.print(Paths.get("20mm_Box.gx"));
+		boolean print = client.print("20mm_Box.gx", Files.readAllBytes(Paths.get("20mm_Box.gx")));
 		client.close();
 		assertTrue(print);
 	}
