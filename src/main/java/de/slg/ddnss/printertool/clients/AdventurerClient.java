@@ -1,6 +1,7 @@
 package de.slg.ddnss.printertool.clients;
 
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_INFO_STATUS;
+import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_INFO;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_OFF;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_LED_ON;
 import static de.slg.ddnss.printertool.clients.AdventurerCommands.CMD_PREPARE_PRINT;
@@ -56,6 +57,12 @@ public class AdventurerClient extends TcpPrinterClient {
 		String replay = sendCommand(CMD_INFO_STATUS).trim();
 		PrinterInfo info = new PrinterInfo(replay);
 		return info;		
+	}
+	
+	public PrinterStatus getPrinterStatus() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_INFO).trim();
+		PrinterStatus status = new PrinterStatus(replay);
+		return status;		
 	}
 
 }

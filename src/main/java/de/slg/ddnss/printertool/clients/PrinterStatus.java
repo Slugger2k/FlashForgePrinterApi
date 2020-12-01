@@ -12,6 +12,20 @@ public class PrinterStatus {
 	public PrinterStatus() {
 	}
 	
+	/*
+	 * 
+	 * CMD M119 Received.
+     * Endstop: X-max:1 Y-max:0 Z-max:0
+     * MachineStatus: READY
+     * MoveMode: READY
+     * Status: S:1 L:0 J:0 F:0
+     * ok
+	 */
+	public PrinterStatus(String replay) {
+		System.out.println(replay);
+		String[] status = replay.split("\\n");
+		setStatus(status[2].split(":")[1].trim());
+	}
 	
 	public String getStatus() {
 		return status;
