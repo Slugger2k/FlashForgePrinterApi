@@ -1,17 +1,21 @@
 package de.slg.ddnss.printertool.clients;
 
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
-
 public class UdpDiscoveryClient {
 	
+	private final static Logger log = LoggerFactory.getLogger(UdpDiscoveryClient.class);
+	
 	private static final String HOSTNAME = "225.0.0.9";
-	private InetAddress address;
+	private final InetAddress address;
 	private static final int PORT = 19000;
 	private static final int TIMEOUT = 1000;
 	private DatagramSocket socket;
@@ -31,7 +35,7 @@ public class UdpDiscoveryClient {
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, PORT);
 			socket = new DatagramSocket();
 			socket.setSoTimeout(TIMEOUT);
-			System.out.println("Broadcast: " + msg + " => " + buf.length + "Bytes to " + address.getHostAddress() + ":" + PORT);
+			log.info("Broadcast: " + msg + " => " + buf.length + "Bytes to " + address.getHostAddress() + ":" + PORT);
 			socket.send(packet);
 			return receiveMessage();
 		} catch (IOException e) {
@@ -42,7 +46,7 @@ public class UdpDiscoveryClient {
 	private DatagramPacket receiveMessage() throws IOException {
 		DatagramPacket packet = new DatagramPacket(buf, buf.length);
 		socket.receive(packet);
-		System.out.println("Replay from " + packet.getAddress().getHostAddress() + ": " + new String(packet.getData()));
+		log.info("Replay from " + packet.getAddress().getHostAddress() + ": " + new String(packet.getData()));
 		socket.close();
 		return packet;
 	}

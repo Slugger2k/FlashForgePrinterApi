@@ -1,6 +1,11 @@
 package de.slg.ddnss.printertool.clients;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PrinterStatus {
+	
+	private final static Logger log = LoggerFactory.getLogger(PrinterStatus.class);
 
 	private String status;
 	private int extruderTemp;
@@ -22,7 +27,7 @@ public class PrinterStatus {
      * ok
 	 */
 	public PrinterStatus(String replay) {
-		System.out.println(replay);
+		log.info(replay);
 		String[] status = replay.split("\\n");
 		setStatus(status[2].split(":")[1].trim());
 	}

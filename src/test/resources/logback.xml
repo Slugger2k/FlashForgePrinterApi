@@ -1,0 +1,14 @@
+<configuration>
+
+    <logger name="de.slg.ddnss" level="info"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{50}.%M - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="error">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

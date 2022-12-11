@@ -1,35 +1,31 @@
 package de.slg.ddnss.printertool.clients;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
+import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import de.slg.ddnss.printertool.exceptions.FlashForgePrinterException;
-import de.slg.ddnss.printertool.exceptions.FlashForgePrinterTransferException;
-
 public class TcpPrinterClient implements Closeable {
+	
+	private final static Logger log = LoggerFactory.getLogger(TcpPrinterClient.class);
 
 	private Socket socket;
 	private final int port = 8899;
 	private final int timeout = 25000;
-	private String hostname;
+	private final String hostname;
 
 	public TcpPrinterClient(String hostname) {
 		this.hostname = hostname;
 	}
 
 	public String sendCommand(String cmd) throws FlashForgePrinterException {
-		System.out.println("Send Command: " + cmd);
+		log.info("Send Command: " + cmd);
 		try {
 			checkSocket();
 			OutputStream output = socket.getOutputStream();
@@ -50,10 +46,10 @@ public class TcpPrinterClient implements Closeable {
 			checkSocket();
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 			for (byte[] bs : rawData) {
-				System.out.println("Send data: " + bs.length + " bytes");
+				log.info("Send data: " + bs.length + " bytes");
 				dos.write(bs);
 				String replay = receiveSingleLineReplay(socket);
-				System.out.println(replay);
+				log.info(replay);
 				if (!replay.matches("N\\d{4,}\\sok.")) {
 					throw new FlashForgePrinterTransferException("Error while transfering data.");
 				}
@@ -67,24 +63,24 @@ public class TcpPrinterClient implements Closeable {
 		}
 	}
 
-	private void checkSocket() throws UnknownHostException, IOException, SocketException {
+	private void checkSocket() throws IOException {
 		if (socket == null || socket.isClosed()) {
-			System.out.println("Socket null or closed");
+			log.info("Socket null or closed");
 			socket = new Socket(hostname, port);
 			socket.setSoTimeout(timeout);
 		}
 	}
 
 	public String receiveMultiLineReplay(Socket socket) throws FlashForgePrinterException {
-		StringBuffer answer = new StringBuffer();
-		BufferedReader reader = null;
+		var answer = new StringBuilder();
+		BufferedReader reader;
 		try {
 			InputStream input = socket.getInputStream();
 			reader = new BufferedReader(new InputStreamReader(input));
 
 			String line;
 			while ((line = reader.readLine()) != null) {
-				answer.append(line + "\n");
+				answer.append(line).append("\n");
 				if (line.equalsIgnoreCase("ok")) {
 					break;
 				}
@@ -97,7 +93,7 @@ public class TcpPrinterClient implements Closeable {
 	}
 
 	public String receiveSingleLineReplay(Socket socket) throws FlashForgePrinterException {
-		BufferedReader reader = null;
+		BufferedReader reader;
 		try {
 			InputStream input = socket.getInputStream();
 			reader = new BufferedReader(new InputStreamReader(input));
@@ -114,7 +110,7 @@ public class TcpPrinterClient implements Closeable {
 		try {
 			socket.close();			
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
 	}
 }
