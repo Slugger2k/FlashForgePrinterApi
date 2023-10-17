@@ -4,7 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.slg.ddnss.flashforge</groupId>
 	<artifactId>printer-api</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
+	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
