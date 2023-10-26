@@ -57,4 +57,11 @@ You can use this library to build you own monitoring or printing tools.</descrip
 		<developerConnection>Christian Müller</developerConnection>
 		<url>https://slg.ddnss.de</url>
 	</scm>
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/slugger2k/FlashForgePrinterApi</url>
+		</repository>
+	</distributionManagement>
 </project>
