@@ -19,6 +19,66 @@ public class AdventurerClient extends TcpPrinterClient {
 		super(hostname);
 	}
 
+	public boolean moveHome() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_MOVE_HOME);
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G28 Received.\nok");
+	}
+
+	public boolean moveXYZ(int x, int y, int z) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_XYZ, x, y, z));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveXY(int x, int y) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_XY, x, y));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveXZ(int x, int z) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_XZ, x, z));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveYZ(int y, int z) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_YZ, y, z));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveX(int x) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_X, x));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveY(int y) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_Y, y));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean moveZ(int z) throws FlashForgePrinterException {
+		String replay = sendCommand(String.format(CMD_MOVE_Z, z));
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G1 Received.\nok");
+	}
+
+	public boolean setAbsoluteMove() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_SET_ABSOLUTE_MOVE);
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G90 Received.\nok");
+	}
+
+	public boolean setRelativeMove() throws FlashForgePrinterException {
+		String replay = sendCommand(CMD_SET_RELATIVE_MOVE);
+		log.info(replay);
+		return replay.trim().contentEquals("CMD G91 Received.\nok");
+	}
+
 	public boolean print(String filename, byte[] readAllLines) throws FlashForgePrinterException {
 		log.info("File: {}/{} byte", filename, readAllLines.length);
 
