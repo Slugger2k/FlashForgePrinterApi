@@ -23,5 +23,15 @@ public class AdventurerCommands {
 	public static final String CMD_PREPARE_PRINT = "~M28 %%size%% 0:/user/%%filename%%\r";
 	public static final String CMD_PRINT_START = "~M23 0:/user/%%filename%%\r";
 	public static final String CMD_PRINT_STOP = "~M26\r";
+	public static final String CMD_MOVE_XYZ = "~G1 X%d Y%d Z%d\r";
+	public static final String CMD_MOVE_X = "~G1 X%d\r";
+	public static final String CMD_MOVE_Y = "~G1 Y%d\r";
+	public static final String CMD_MOVE_Z = "~G1 Z%d\r";
+	public static final String CMD_MOVE_XY = "~G1 X%d Y%d\r";
+	public static final String CMD_MOVE_XZ = "~G1 X%d Z%d\r";
+	public static final String CMD_MOVE_YZ = "~G1 Y%d Z%d\r";
+	public static final String CMD_MOVE_HOME = "~G28\r";
+	public static final String CMD_SET_ABSOLUTE_MOVE = "~G90\r";
+	public static final String CMD_SET_RELATIVE_MOVE = "~G91\r";
 
 }

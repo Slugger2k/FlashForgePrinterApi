@@ -28,6 +28,37 @@ class AdventurerClientTest {
 	}
 
 	@Test
+	void printMoveXYZ() throws FlashForgePrinterException, IOException {
+		AdventurerClient client = new AdventurerClient(printerAddress);
+		boolean print = client.moveHome();
+		print &= client.setAbsoluteMove();
+		print &= client.moveXY(20, 20);
+		print &= client.moveXZ(30, 30);
+		print &= client.moveYZ(40, 40);
+		print &= client.moveX(50);
+		print &= client.moveY(50);
+		print &= client.moveZ(50);
+		print &= client.moveXYZ(10, 10, 10);
+		print &= client.setRelativeMove();
+		print &= client.moveXY(10, 10);
+		print &= client.moveXZ(10, 10);
+		print &= client.moveYZ(10, 10);
+		print &= client.moveX(10);
+		print &= client.moveY(10);
+		print &= client.moveZ(10);
+		client.close();
+		assertTrue(print);
+	}
+
+	@Test
+	void printMoveHome() throws FlashForgePrinterException, IOException {
+		AdventurerClient client = new AdventurerClient(printerAddress);
+		boolean print = client.moveHome();
+		client.close();
+		assertTrue(print);
+	}
+
+	@Test
 	void printTest() throws FlashForgePrinterException, IOException {
 		AdventurerClient client = new AdventurerClient(printerAddress);
 		boolean print = client.print("20mm_Box.gx", Files.readAllBytes(Paths.get("20mm_Box.gx")));
