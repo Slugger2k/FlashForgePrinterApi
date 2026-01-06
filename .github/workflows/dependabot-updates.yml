@@ -1,0 +1,13 @@
+name: Dependabot Updates
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Run Dependabot
+        uses: dependabot/fetch-metadata@v2
